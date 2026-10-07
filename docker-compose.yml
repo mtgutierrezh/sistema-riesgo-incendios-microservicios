@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - servicio-datos
+      - servicio-riesgo
+    networks:
+      - red-incendios
+
+  servicio-datos:
+    build: ./servicio-datos
+    container_name: servicio-datos
+    ports:
+      - "8001:8001"
+    networks:
+      - red-incendios
+
+  servicio-riesgo:
+    build: ./servicio-riesgo
+    container_name: servicio-riesgo
+    ports:
+      - "8002:8002"
+    networks:
+      - red-incendios
+
+networks:
+  red-incendios:
+    driver: bridge
