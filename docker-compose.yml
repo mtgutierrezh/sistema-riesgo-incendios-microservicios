@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   api-gateway:
     build: ./api-gateway
@@ -9,8 +7,10 @@ services:
     env_file:
       - .env
     depends_on:
-      - servicio-datos
-      - servicio-riesgo
+      servicio-datos:
+        condition: service_healthy
+      servicio-riesgo:
+        condition: service_healthy
     networks:
       - red-incendios
 
@@ -19,6 +19,11 @@ services:
     container_name: servicio-datos
     ports:
       - "8001:8001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/docs')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     networks:
       - red-incendios
 
@@ -27,6 +32,11 @@ services:
     container_name: servicio-riesgo
     ports:
       - "8002:8002"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/docs')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     networks:
       - red-incendios
 
